@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">NewsApp</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="todo">TODO</string>
+    <string name="sc_r_fragment">All news in one place, be the first to know last news</string>
+    <string name="title_third_fragment">Select your favorite topics</string>
+    <string name="info_third_fragment">Select some of your favorite topics to let us suggest better news for you.</string>
+    <string name="next">Next</string>
+    <string name="get_started">Get Started</string>
+</resources>
