@@ -7,13 +7,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import uz.ilhomjon.newsapp.models.TopHeadlines.TopHeadlinesResponse
-import uz.ilhomjon.newsapp.repository.GetHeadlinesRepository
+import uz.ilhomjon.newsapp.repository.NetworkRepository
 import uz.ilhomjon.newsapp.utils.Resource
 import uz.ilhomjon.newsapp.utils.Status
 import javax.inject.Inject
 
 
-class TopHeadlinesViewModel @Inject constructor(private val repository: GetHeadlinesRepository) :
+class TopHeadlinesViewModel @Inject constructor(private val repository: NetworkRepository) :
     ViewModel() {
     private val stateFlow =
         MutableStateFlow<Resource<TopHeadlinesResponse>>(Resource(Status.LOADING, null, "Loading"))
