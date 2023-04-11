@@ -41,6 +41,7 @@
         app:spanCount="2"/>
 
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/next_btn"
         android:layout_width="336dp"
         android:layout_height="66dp"
         android:layout_gravity="center"

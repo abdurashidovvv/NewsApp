@@ -16,6 +16,8 @@ class CategoryAdapter(val list: ArrayList<AllCategory>, val categoryItemCLick: C
             rvItem.tv.text=allCategory.category_name
             if (allCategory.isSelected){
                 rvItem.checkImage.setImageResource(R.drawable.check)
+            }else{
+                rvItem.checkImage.setImageResource(0)
             }
             rvItem.checkbox.setOnClickListener {
                 categoryItemCLick.onClick(allCategory, position)

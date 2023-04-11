@@ -1,10 +1,12 @@
 package uz.ilhomjon.newsapp.view.ui.register
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import uz.ilhomjon.newsapp.R
 import uz.ilhomjon.newsapp.database.entity.AllCategory
 import uz.ilhomjon.newsapp.databinding.FragmentThirdBinding
@@ -30,14 +32,26 @@ class ThirdFragment : Fragment(), CategoryAdapter.CategoryItemCLick {
             val category = AllCategory(category_name = item)
             list.add(category)
         }
-        categoryAdapter = CategoryAdapter(list, this)
-        binding.myRv.adapter = categoryAdapter
+
+        binding.nextBtn.setOnClickListener {
+            for (category in list) {
+                databaseViewModel.addCategory(category)
+            }
+            
+        }
 
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+        categoryAdapter = CategoryAdapter(list, this)
+        binding.myRv.adapter = categoryAdapter
+    }
+
     override fun onClick(allCategory: AllCategory, position: Int) {
         allCategory.isSelected = !allCategory.isSelected
+        Log.d("@@@@", "onClick: $allCategory - $position")
         categoryAdapter.notifyItemChanged(position)
     }
 }
