@@ -17,56 +17,11 @@ import uz.ilhomjon.newsapp.viewmodel.TopHeadlinesViewModel
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
-class MainActivity : AppCompatActivity(), CoroutineScope {
-
-    @Inject
-    lateinit var topHeadlinesViewModel: TopHeadlinesViewModel
-    @Inject
-    lateinit var categoryNewsViewModel: CategoryNewsViewModel
-    @Inject
-    lateinit var databaseViewModel: DatabaseViewModel
+class MainActivity : AppCompatActivity() {
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     override fun onCreate(savedInstanceState: Bundle?) {
-        App.appComponent.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-
-        launch(Dispatchers.IO) {
-            topHeadlinesViewModel.getStateFlow().collectLatest {
-                when (it.status) {
-                    Status.SUCCESS->{
-//                        Log.d("@@@", "onCreate: ${it.data}")
-                    }
-                    Status.ERROR->{
-//                        Log.d("@@@", "onCreate: ${it.message}")
-                    }
-                    Status.LOADING->{
-//                        Log.d("@@@", "onCreate: ${it.message}")
-                    }
-                }
-            }
-
-            databaseViewModel.addCategory(AllCategory(category_name = "Business"))
-
-            categoryNewsViewModel.getCategoryNews("science", "7c04fcfddd224ed6a591ac49e9abb8f2").collectLatest {
-                when(it.status){
-                    Status.SUCCESS->{
-                        Log.d("@@@", "onCreate: ${it.data}")
-                    }
-                    Status.ERROR->{
-                        Log.d("@@@", "onCreate: ${it.message}")
-                    }
-                    Status.LOADING->{
-                        Log.d("@@@", "onCreate: ${it.message}")
-                    }
-                }
-            }
-
-        }
-
     }
-
-    override val coroutineContext: CoroutineContext
-        get() = Job()
 }

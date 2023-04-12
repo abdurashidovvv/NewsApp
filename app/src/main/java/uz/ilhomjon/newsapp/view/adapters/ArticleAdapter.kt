@@ -3,19 +3,19 @@ package uz.ilhomjon.newsapp.view.adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import uz.ilhomjon.newsapp.R
+import com.squareup.picasso.Picasso
 import uz.ilhomjon.newsapp.database.entity.AllCategory
 import uz.ilhomjon.newsapp.databinding.ArticleAdapterItemBinding
-import uz.ilhomjon.newsapp.databinding.CategoryRvItemBinding
-import uz.ilhomjon.newsapp.models.Category.Article
+import uz.ilhomjon.newsapp.models.TopHeadlines.Article
 
-class ArticleAdapter(val list: List<Article>, val categoryItemCLick: CategoryItemCLick) :
+class ArticleAdapter(var list: List<Article>, val categoryItemCLick: CategoryItemCLick) :
     RecyclerView.Adapter<ArticleAdapter.Vh>() {
 
     inner class Vh(private val rvItem: ArticleAdapterItemBinding) : RecyclerView.ViewHolder(rvItem.root) {
         fun onBind(article: Article, position: Int) {
-            rvItem.category.text=article.content
+            rvItem.category.text=article.author
             rvItem.title.text=article.title
+            Picasso.get().load(article.urlToImage).into(rvItem.image)
         }
     }
 
