@@ -37,7 +37,7 @@ class ThirdFragment : Fragment(), CategoryAdapter.CategoryItemCLick {
             for (category in list) {
                 databaseViewModel.addCategory(category)
             }
-            
+            findNavController().navigate(R.id.mainFragment)
         }
 
         return binding.root

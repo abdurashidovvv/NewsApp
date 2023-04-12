@@ -25,4 +25,9 @@
         android:name="uz.ilhomjon.newsapp.view.ui.register.ThirdFragment"
         android:label="fragment_third"
         tools:layout="@layout/fragment_third" />
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="uz.ilhomjon.newsapp.view.ui.MainFragment"
+        android:label="fragment_main"
+        tools:layout="@layout/fragment_main" />
 </navigation>
