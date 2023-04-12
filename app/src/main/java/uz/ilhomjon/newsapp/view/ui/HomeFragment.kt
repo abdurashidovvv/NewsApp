@@ -16,14 +16,16 @@ import uz.ilhomjon.newsapp.App
 import uz.ilhomjon.newsapp.database.entity.AllCategory
 import uz.ilhomjon.newsapp.databinding.FragmentHomeBinding
 import uz.ilhomjon.newsapp.models.TopHeadlines.Article
+import uz.ilhomjon.newsapp.utils.Constants
 import uz.ilhomjon.newsapp.utils.Status
 import uz.ilhomjon.newsapp.view.adapters.ArticleAdapter
+import uz.ilhomjon.newsapp.view.adapters.HomeCategoryAdapter
 import uz.ilhomjon.newsapp.viewmodel.CategoryNewsViewModel
 import uz.ilhomjon.newsapp.viewmodel.TopHeadlinesViewModel
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
-class HomeFragment : Fragment(), CoroutineScope, ArticleAdapter.CategoryItemCLick {
+class HomeFragment : Fragment(), CoroutineScope, HomeCategoryAdapter.CategoryItemCLick {
 
     override fun onAttach(context: Context) {
         App.appComponent.injectHomeFragment(this)
@@ -33,37 +35,55 @@ class HomeFragment : Fragment(), CoroutineScope, ArticleAdapter.CategoryItemCLic
 
     @Inject
     lateinit var topHeadlinesViewModel: TopHeadlinesViewModel
+
     @Inject
     lateinit var categoryNewsViewModel: CategoryNewsViewModel
-    lateinit var articleAdapter: ArticleAdapter
-    private lateinit var list:ArrayList<Article>
-    private val binding by lazy{FragmentHomeBinding.inflate(layoutInflater)}
+
+    private lateinit var articleAdapter: ArticleAdapter
+    private lateinit var homeCategoryAdapter: HomeCategoryAdapter
+    private lateinit var list: ArrayList<Article>
+    private lateinit var categoryList: ArrayList<AllCategory>
+    private val binding by lazy { FragmentHomeBinding.inflate(layoutInflater) }
+
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
 
-        list= ArrayList()
-        articleAdapter= ArticleAdapter(list, this)
-        binding.myRv.adapter=articleAdapter
+        list = ArrayList()
+        categoryList = ArrayList()
+        val allCategory=Constants.categoryList
+        for (category in allCategory) {
+            categoryList.add(AllCategory(category_name = category))
+        }
+        homeCategoryAdapter = HomeCategoryAdapter(categoryList, this)
+        binding.myTabLayout.adapter = homeCategoryAdapter
+
+        articleAdapter = ArticleAdapter(list, object : ArticleAdapter.CategoryItemCLick {
+            override fun onClick(allCategory: AllCategory, position: Int) {
+                TODO("Not yet implemented")
+            }
+        })
+        binding.myRv.adapter = articleAdapter
+
         launch(Dispatchers.Main) {
             topHeadlinesViewModel.getStateFlow().collect {
-                when(it.status){
-                    Status.LOADING->{
+                when (it.status) {
+                    Status.LOADING -> {
                         Log.d("@@@", "onCreateView: ${it.message}")
                     }
-                    Status.SUCCESS->{
-                        if (it.data!=null){
+                    Status.SUCCESS -> {
+                        if (it.data != null) {
                             list.addAll(it.data.articles)
-                            articleAdapter.list=list
+                            articleAdapter.list = list
                             articleAdapter.notifyDataSetChanged()
                             Log.d("@@@", "onCreateView: ${it.data.articles}")
-                        }else{
+                        } else {
                             Log.d("@@@", "onCreateView: ${it.message}")
                         }
                     }
-                    Status.ERROR->{
+                    Status.ERROR -> {
                         Log.d("@@@", "onCreateView: ${it.message}")
                     }
                 }
@@ -76,7 +96,13 @@ class HomeFragment : Fragment(), CoroutineScope, ArticleAdapter.CategoryItemCLic
     override val coroutineContext: CoroutineContext
         get() = Job()
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onClick(allCategory: AllCategory, position: Int) {
-
+        for (category in categoryList) {
+            category.isSelected=false
+        }
+        allCategory.isSelected = !allCategory.isSelected
+        Log.d("@@@@", "onClick: $allCategory - $position")
+        homeCategoryAdapter.notifyDataSetChanged()
     }
 }
