@@ -7,11 +7,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".view.ui.MainFragment">
 
-    <LinearLayout
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_container_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/black"
         android:orientation="horizontal" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
