@@ -21,37 +21,37 @@ class MainFragment : Fragment() {
             when (it.itemId) {
                 R.id.home -> {
                     val fragment = HomeFragment()
-                    parentFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container_view, fragment)
-                        .commit()
+                    replaceFragment(fragment)
                     return@setOnNavigationItemSelectedListener true
                 }
                 R.id.category -> {
                     val fragment = CategoryFragment()
-                    parentFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container_view, fragment)
-                        .commit()
+                    replaceFragment(fragment)
                     return@setOnNavigationItemSelectedListener true
 
                 }
                 R.id.saved -> {
-
                     val fragment = SavedFragment()
-                    parentFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container_view, fragment)
-                        .commit()
+                    replaceFragment(fragment)
                     return@setOnNavigationItemSelectedListener true
                 }
                 R.id.info -> {
                     val fragment = InfoFragment()
-                    parentFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container_view, fragment)
-                        .commit()
+                    replaceFragment(fragment)
                     return@setOnNavigationItemSelectedListener true
                 }
             }
             return@setOnNavigationItemSelectedListener false
         }
+        val fragment = HomeFragment()
+        replaceFragment(fragment)
+
         return binding.root
+    }
+
+    private fun replaceFragment(fragment: Fragment) {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container_view, fragment)
+            .commit()
     }
 }

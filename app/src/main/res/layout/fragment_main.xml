@@ -7,11 +7,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".view.ui.MainFragment">
 
-    <androidx.fragment.app.FragmentContainerView
+    <LinearLayout
         android:id="@+id/fragment_container_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="uz.ilhomjon.newsapp.view.ui.HomeFragment"/>
+        android:background="@color/black"
+        android:orientation="horizontal" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/my_bottom_nav"
