@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
@@ -150,6 +149,7 @@ class HomeFragment : Fragment(), CoroutineScope, HomeCategoryAdapter.CategoryIte
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     suspend fun getCategoryItem(category:String){
         categoryNewsViewModel.getCategoryNews(category,
             "7c04fcfddd224ed6a591ac49e9abb8f2").collect {
