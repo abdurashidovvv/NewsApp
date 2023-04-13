@@ -29,6 +29,7 @@ import uz.ilhomjon.newsapp.viewmodel.CategoryNewsViewModel
 import uz.ilhomjon.newsapp.viewmodel.TopHeadlinesViewModel
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
+import kotlin.math.abs
 
 class HomeFragment : Fragment(), CoroutineScope, HomeCategoryAdapter.CategoryItemCLick {
 
@@ -73,51 +74,63 @@ class HomeFragment : Fragment(), CoroutineScope, HomeCategoryAdapter.CategoryIte
             val compositePageTransformer = CompositePageTransformer()
             compositePageTransformer.addTransformer(MarginPageTransformer(40))
             compositePageTransformer.addTransformer { page, position ->
-                val r: Float = 1 - Math.abs(position)
+                val r: Float = 1 - abs(position)
                 page.scaleY = 0.95f + r * 0.05f
             }
             myViewpager.setPageTransformer(compositePageTransformer)
+        }
 
-            val allCategory = Constants.categoryList
-            for (category in allCategory) {
+
+        //category
+        val allCategory = Constants.categoryList
+        for (category in allCategory) {
+            if (category=="business"){
+                categoryList.add(AllCategory(category_name = category, isSelected = true))
+            }else{
                 categoryList.add(AllCategory(category_name = category))
             }
-            homeCategoryAdapter = HomeCategoryAdapter(categoryList, this@HomeFragment)
-            binding.myTabLayout.adapter = homeCategoryAdapter
+        }
+        homeCategoryAdapter = HomeCategoryAdapter(categoryList, this@HomeFragment)
+        binding.myTabLayout.adapter = homeCategoryAdapter
 
-            articleAdapter = ArticleAdapter(list, object : ArticleAdapter.CategoryItemCLick {
-                override fun onClick(allCategory: AllCategory, position: Int) {
-                    TODO("Not yet implemented")
-                }
-            })
-            binding.myRv.adapter = articleAdapter
+        articleAdapter = ArticleAdapter(list, object : ArticleAdapter.CategoryItemCLick {
+            override fun onClick(allCategory: AllCategory, position: Int) {
+                TODO("Not yet implemented")
+            }
+        })
+        binding.myRv.adapter = articleAdapter
 
-            //TopHeadlines
-            launch(Dispatchers.Main) {
-                topHeadlinesViewModel.getStateFlow().collect {
-                    when (it.status) {
-                        Status.LOADING -> {
-                            Log.d("@@@", "onCreateView: ${it.message}")
-                        }
-                        Status.SUCCESS -> {
-                            if (it.data != null) {
-                                list.addAll(it.data.articles)
-                                articleAdapter.list = list
-                                articleAdapter.notifyDataSetChanged()
-                                Log.d("@@@", "onCreateView: ${it.data.articles}")
-                            } else {
-                                Log.d("@@@", "onCreateView: ${it.message}")
-                            }
-                        }
-                        Status.ERROR -> {
+        launch(Dispatchers.Main) {
+            getCategoryItem("business")
+        }
+
+        //TopHeadlines
+        launch(Dispatchers.Main) {
+//            getCategoryItem("business")
+            topHeadlinesViewModel.getStateFlow().collect {
+                when (it.status) {
+                    Status.LOADING -> {
+                        binding.viewpagerProgress.visibility = View.VISIBLE
+                        Log.d("@@@", "onCreateView: ${it.message}")
+                    }
+                    Status.SUCCESS -> {
+                        binding.viewpagerProgress.visibility = View.GONE
+                        if (it.data != null) {
+                            list.addAll(it.data.articles)
+                            articleAdapter.list = list
+                            articleAdapter.notifyDataSetChanged()
+                            Log.d("@@@", "onCreateView: ${it.data.articles}")
+                        } else {
                             Log.d("@@@", "onCreateView: ${it.message}")
                         }
                     }
+                    Status.ERROR -> {
+                        Log.d("@@@", "onCreateView: ${it.message}")
+                    }
                 }
             }
-
-            return binding.root
         }
+        return binding.root
     }
 
     override val coroutineContext: CoroutineContext
@@ -133,26 +146,32 @@ class HomeFragment : Fragment(), CoroutineScope, HomeCategoryAdapter.CategoryIte
         homeCategoryAdapter.notifyDataSetChanged()
 
         launch(Dispatchers.Main) {
-            categoryNewsViewModel.getCategoryNews(allCategory.category_name,
-                "7c04fcfddd224ed6a591ac49e9abb8f2").collect {
-                when (it.status) {
-                    Status.LOADING -> {
+            getCategoryItem(allCategory.category_name)
+        }
+    }
+
+    suspend fun getCategoryItem(category:String){
+        categoryNewsViewModel.getCategoryNews(category,
+            "7c04fcfddd224ed6a591ac49e9abb8f2").collect {
+            when (it.status) {
+                Status.LOADING -> {
+                    binding.rvProgress.visibility = View.VISIBLE
+                    Log.d("@@@", "onClick: ${it.message}")
+                }
+                Status.SUCCESS -> {
+                    binding.rvProgress.visibility = View.GONE
+                    if (it.data != null) {
+                        categoryArticleList.clear()
+                        Log.d("@@@", "onClick: ${it.data.articles}")
+                        categoryArticleList.addAll(it.data.articles)
+                        homeViewPagerAdapter.list = categoryArticleList
+                        homeViewPagerAdapter.notifyDataSetChanged()
+                    } else {
                         Log.d("@@@", "onClick: ${it.message}")
                     }
-                    Status.SUCCESS -> {
-                        if (it.data != null) {
-                            categoryArticleList.clear()
-                            Log.d("@@@", "onClick: ${it.data.articles}")
-                            categoryArticleList.addAll(it.data.articles)
-                            homeViewPagerAdapter.list = categoryArticleList
-                            homeViewPagerAdapter.notifyDataSetChanged()
-                        } else {
-                            Log.d("@@@", "onClick: ${it.message}")
-                        }
-                    }
-                    Status.ERROR -> {
-                        Log.d("@@@", "onClick: ${it.message}")
-                    }
+                }
+                Status.ERROR -> {
+                    Log.d("@@@", "onClick: ${it.message}")
                 }
             }
         }

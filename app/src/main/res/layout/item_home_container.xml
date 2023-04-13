@@ -11,10 +11,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.flaviofaria.kenburnsview.KenBurnsView
+        <ImageView
             android:id="@+id/kbvLocation"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"/>
 
         <TextView
             android:id="@+id/category"
@@ -26,7 +27,7 @@
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias=".7" />
+            app:layout_constraintVertical_bias=".6" />
 
         <TextView
             android:id="@+id/description"
