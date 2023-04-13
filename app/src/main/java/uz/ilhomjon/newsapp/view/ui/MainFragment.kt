@@ -36,7 +36,7 @@ class MainFragment : Fragment() {
                     return@setOnNavigationItemSelectedListener true
                 }
                 R.id.info -> {
-                    val fragment = InfoFragment()
+                    val fragment = SettingsFragment()
                     replaceFragment(fragment)
                     return@setOnNavigationItemSelectedListener true
                 }
