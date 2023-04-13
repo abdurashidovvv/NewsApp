@@ -19,7 +19,7 @@ class HomeCategoryAdapter(val list: ArrayList<AllCategory>, val categoryItemCLic
                 rvItem.card.setBackgroundColor(Color.parseColor("#F3F4F6"))
             }
             rvItem.root.setOnClickListener {
-                categoryItemCLick.onClick(allCategory, position)
+                categoryItemCLick.categoryClick(allCategory, position)
             }
         }
     }
@@ -35,6 +35,6 @@ class HomeCategoryAdapter(val list: ArrayList<AllCategory>, val categoryItemCLic
     override fun getItemCount(): Int = list.size
 
     interface CategoryItemCLick{
-        fun onClick(allCategory: AllCategory, position: Int)
+        fun categoryClick(allCategory: AllCategory, position: Int)
     }
 }

@@ -6,25 +6,27 @@ import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.recyclerview.widget.RecyclerView
 import com.flaviofaria.kenburnsview.RandomTransitionGenerator
+import com.squareup.picasso.Picasso
 import uz.ilhomjon.newsapp.databinding.ItemContainerLocationBinding
+import uz.ilhomjon.newsapp.models.Category.Article
 
-class TravelLocationsAdapter(private val list: ArrayList<Int>) :
-    RecyclerView.Adapter<TravelLocationsAdapter.Vh>() {
+class HomeViewPagerAdapter(var list: ArrayList<Article>) :
+    RecyclerView.Adapter<HomeViewPagerAdapter.Vh>() {
 
     inner class Vh(private val binding: ItemContainerLocationBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun onBind(image: Int) {
+        fun onBind(article: Article) {
 
 
             binding.apply {
-                kbvLocation.setImageResource(image)
+                Picasso.get().load(article.urlToImage).into(kbvLocation)
                 val interpolator = AccelerateDecelerateInterpolator()
 
                 // It is used to change the duration and
                 // the interpolator of transitions
 
-                category.visibility = View.GONE
-                description.visibility = View.GONE
+                category.text=article.author
+                description.text=article.title
                 // It is used to change the duration and
                 // the interpolator of transitions
                 val generator = RandomTransitionGenerator(2000, interpolator)
@@ -48,4 +50,5 @@ class TravelLocationsAdapter(private val list: ArrayList<Int>) :
     }
 
     override fun getItemCount(): Int = list.size
+
 }

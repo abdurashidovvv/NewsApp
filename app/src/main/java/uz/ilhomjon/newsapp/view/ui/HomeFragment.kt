@@ -8,6 +8,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.CompositePageTransformer
+import androidx.viewpager2.widget.MarginPageTransformer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -20,6 +24,7 @@ import uz.ilhomjon.newsapp.utils.Constants
 import uz.ilhomjon.newsapp.utils.Status
 import uz.ilhomjon.newsapp.view.adapters.ArticleAdapter
 import uz.ilhomjon.newsapp.view.adapters.HomeCategoryAdapter
+import uz.ilhomjon.newsapp.view.adapters.HomeViewPagerAdapter
 import uz.ilhomjon.newsapp.viewmodel.CategoryNewsViewModel
 import uz.ilhomjon.newsapp.viewmodel.TopHeadlinesViewModel
 import javax.inject.Inject
@@ -39,10 +44,12 @@ class HomeFragment : Fragment(), CoroutineScope, HomeCategoryAdapter.CategoryIte
     @Inject
     lateinit var categoryNewsViewModel: CategoryNewsViewModel
 
+    private lateinit var homeViewPagerAdapter: HomeViewPagerAdapter
     private lateinit var articleAdapter: ArticleAdapter
     private lateinit var homeCategoryAdapter: HomeCategoryAdapter
     private lateinit var list: ArrayList<Article>
     private lateinit var categoryList: ArrayList<AllCategory>
+    private lateinit var categoryArticleList: ArrayList<uz.ilhomjon.newsapp.models.Category.Article>
     private val binding by lazy { FragmentHomeBinding.inflate(layoutInflater) }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -53,56 +60,102 @@ class HomeFragment : Fragment(), CoroutineScope, HomeCategoryAdapter.CategoryIte
 
         list = ArrayList()
         categoryList = ArrayList()
-        val allCategory=Constants.categoryList
-        for (category in allCategory) {
-            categoryList.add(AllCategory(category_name = category))
-        }
-        homeCategoryAdapter = HomeCategoryAdapter(categoryList, this)
-        binding.myTabLayout.adapter = homeCategoryAdapter
+        categoryArticleList = ArrayList()
 
-        articleAdapter = ArticleAdapter(list, object : ArticleAdapter.CategoryItemCLick {
-            override fun onClick(allCategory: AllCategory, position: Int) {
-                TODO("Not yet implemented")
+        //Viewpager2
+        homeViewPagerAdapter = HomeViewPagerAdapter(categoryArticleList)
+        binding.myViewpager.adapter = homeViewPagerAdapter
+        binding.apply {
+            myViewpager.clipToPadding = false
+            myViewpager.clipChildren = false
+            myViewpager.offscreenPageLimit = 3
+            myViewpager.getChildAt(0).overScrollMode = RecyclerView.OVER_SCROLL_NEVER
+            val compositePageTransformer = CompositePageTransformer()
+            compositePageTransformer.addTransformer(MarginPageTransformer(40))
+            compositePageTransformer.addTransformer { page, position ->
+                val r: Float = 1 - Math.abs(position)
+                page.scaleY = 0.95f + r * 0.05f
             }
-        })
-        binding.myRv.adapter = articleAdapter
+            myViewpager.setPageTransformer(compositePageTransformer)
 
-        launch(Dispatchers.Main) {
-            topHeadlinesViewModel.getStateFlow().collect {
-                when (it.status) {
-                    Status.LOADING -> {
-                        Log.d("@@@", "onCreateView: ${it.message}")
-                    }
-                    Status.SUCCESS -> {
-                        if (it.data != null) {
-                            list.addAll(it.data.articles)
-                            articleAdapter.list = list
-                            articleAdapter.notifyDataSetChanged()
-                            Log.d("@@@", "onCreateView: ${it.data.articles}")
-                        } else {
+            val allCategory = Constants.categoryList
+            for (category in allCategory) {
+                categoryList.add(AllCategory(category_name = category))
+            }
+            homeCategoryAdapter = HomeCategoryAdapter(categoryList, this@HomeFragment)
+            binding.myTabLayout.adapter = homeCategoryAdapter
+
+            articleAdapter = ArticleAdapter(list, object : ArticleAdapter.CategoryItemCLick {
+                override fun onClick(allCategory: AllCategory, position: Int) {
+                    TODO("Not yet implemented")
+                }
+            })
+            binding.myRv.adapter = articleAdapter
+
+            //TopHeadlines
+            launch(Dispatchers.Main) {
+                topHeadlinesViewModel.getStateFlow().collect {
+                    when (it.status) {
+                        Status.LOADING -> {
+                            Log.d("@@@", "onCreateView: ${it.message}")
+                        }
+                        Status.SUCCESS -> {
+                            if (it.data != null) {
+                                list.addAll(it.data.articles)
+                                articleAdapter.list = list
+                                articleAdapter.notifyDataSetChanged()
+                                Log.d("@@@", "onCreateView: ${it.data.articles}")
+                            } else {
+                                Log.d("@@@", "onCreateView: ${it.message}")
+                            }
+                        }
+                        Status.ERROR -> {
                             Log.d("@@@", "onCreateView: ${it.message}")
                         }
                     }
-                    Status.ERROR -> {
-                        Log.d("@@@", "onCreateView: ${it.message}")
-                    }
                 }
             }
-        }
 
-        return binding.root
+            return binding.root
+        }
     }
 
     override val coroutineContext: CoroutineContext
         get() = Job()
 
     @SuppressLint("NotifyDataSetChanged")
-    override fun onClick(allCategory: AllCategory, position: Int) {
+    override fun categoryClick(allCategory: AllCategory, position: Int) {
         for (category in categoryList) {
-            category.isSelected=false
+            category.isSelected = false
         }
         allCategory.isSelected = !allCategory.isSelected
         Log.d("@@@@", "onClick: $allCategory - $position")
         homeCategoryAdapter.notifyDataSetChanged()
+
+        launch(Dispatchers.Main) {
+            categoryNewsViewModel.getCategoryNews(allCategory.category_name,
+                "7c04fcfddd224ed6a591ac49e9abb8f2").collect {
+                when (it.status) {
+                    Status.LOADING -> {
+                        Log.d("@@@", "onClick: ${it.message}")
+                    }
+                    Status.SUCCESS -> {
+                        if (it.data != null) {
+                            categoryArticleList.clear()
+                            Log.d("@@@", "onClick: ${it.data.articles}")
+                            categoryArticleList.addAll(it.data.articles)
+                            homeViewPagerAdapter.list = categoryArticleList
+                            homeViewPagerAdapter.notifyDataSetChanged()
+                        } else {
+                            Log.d("@@@", "onClick: ${it.message}")
+                        }
+                    }
+                    Status.ERROR -> {
+                        Log.d("@@@", "onClick: ${it.message}")
+                    }
+                }
+            }
+        }
     }
 }
+
