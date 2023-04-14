@@ -9,4 +9,9 @@
     <string name="next">Next</string>
     <string name="get_started">Get Started</string>
     <string name="browse">Browse</string>
+    <string name="english">English</string>
+    <string name="turkish">Turkish</string>
+    <string name="german">German</string>
+    <string name="spanish">Spanish</string>
+    <string name="language">Language</string>
 </resources>
