@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.navigation.fragment.findNavController
 import uz.ilhomjon.newsapp.R
 import uz.ilhomjon.newsapp.databinding.FragmentSettingsBinding
 
@@ -21,6 +22,10 @@ class SettingsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
+
+        binding.lang.setOnClickListener {
+            findNavController().navigate(R.id.languageFragment)
+        }
 
         return binding.root
     }

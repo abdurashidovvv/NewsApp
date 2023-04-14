@@ -34,8 +34,6 @@
             android:checked="true"
             android:text="@string/english"
             android:textColor="@color/black"
-            android:buttonTintMode="@null"
-            android:buttonTint="@null"
             android:textSize="20sp"
             app:layout_constraintTop_toBottomOf="@id/title" />
 
