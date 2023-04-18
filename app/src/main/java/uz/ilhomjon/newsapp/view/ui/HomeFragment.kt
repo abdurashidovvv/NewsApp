@@ -109,7 +109,7 @@ class HomeFragment : Fragment(), CoroutineScope, HomeCategoryAdapter.CategoryIte
 
         //TopHeadlines
         launch(Dispatchers.Main) {
-//            getCategoryItem("business")
+            getCategoryItem("business")
             topHeadlinesViewModel.getStateFlow().collect {
                 when (it.status) {
                     Status.LOADING -> {

@@ -55,6 +55,9 @@
         <action
             android:id="@+id/action_mainFragment_to_infoFragment"
             app:destination="@id/infoFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_selectFragment"
+            app:destination="@id/selectFragment" />
     </fragment>
     <fragment
         android:id="@+id/languageFragment"
@@ -74,4 +77,9 @@
             android:id="@+id/action_infoFragment_to_mainFragment"
             app:destination="@id/mainFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/selectFragment"
+        android:name="uz.ilhomjon.newsapp.view.ui.SelectFragment"
+        android:label="fragment_select"
+        tools:layout="@layout/fragment_select" />
 </navigation>
