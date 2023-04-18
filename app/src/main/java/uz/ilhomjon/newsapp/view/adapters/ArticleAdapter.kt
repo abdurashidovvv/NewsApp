@@ -16,6 +16,9 @@ class ArticleAdapter(var list: List<Article>, val categoryItemCLick: CategoryIte
             rvItem.category.text=article.author
             rvItem.title.text=article.title
             Picasso.get().load(article.urlToImage).into(rvItem.image)
+            rvItem.root.setOnClickListener {
+                categoryItemCLick.onClick(article, position)
+            }
         }
     }
 
@@ -30,6 +33,6 @@ class ArticleAdapter(var list: List<Article>, val categoryItemCLick: CategoryIte
     override fun getItemCount(): Int = list.size
 
     interface CategoryItemCLick{
-        fun onClick(allCategory: AllCategory, position: Int)
+        fun onClick(article: Article, position: Int)
     }
 }

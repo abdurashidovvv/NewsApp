@@ -6,17 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import uz.ilhomjon.newsapp.R
-import uz.ilhomjon.newsapp.databinding.FragmentInfoBinding
-import uz.ilhomjon.newsapp.databinding.FragmentLanguageBinding
+import uz.ilhomjon.newsapp.databinding.FragmentSelectBinding
 
-class   InfoFragment : Fragment() {
 
-    private val binding by lazy { FragmentInfoBinding.inflate(layoutInflater)}
+class SelectFragment : Fragment() {
+
+    private val binding by lazy { FragmentSelectBinding.inflate(layoutInflater) }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-
 
         return binding.root
     }

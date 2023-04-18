@@ -8,6 +8,8 @@ object Constants {
 
     const val DB_NAME = "news_db"
 
+    const val API_KEY="7c04fcfddd224ed6a591ac49e9abb8f2"
+
     val categoryList = arrayListOf(
         "business",
         "entertainment",

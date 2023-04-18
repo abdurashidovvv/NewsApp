@@ -8,6 +8,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
@@ -16,10 +18,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import uz.ilhomjon.newsapp.App
+import uz.ilhomjon.newsapp.R
 import uz.ilhomjon.newsapp.database.entity.AllCategory
 import uz.ilhomjon.newsapp.databinding.FragmentHomeBinding
 import uz.ilhomjon.newsapp.models.TopHeadlines.Article
 import uz.ilhomjon.newsapp.utils.Constants
+import uz.ilhomjon.newsapp.utils.Constants.API_KEY
 import uz.ilhomjon.newsapp.utils.Status
 import uz.ilhomjon.newsapp.view.adapters.ArticleAdapter
 import uz.ilhomjon.newsapp.view.adapters.HomeCategoryAdapter
@@ -93,8 +97,8 @@ class HomeFragment : Fragment(), CoroutineScope, HomeCategoryAdapter.CategoryIte
         binding.myTabLayout.adapter = homeCategoryAdapter
 
         articleAdapter = ArticleAdapter(list, object : ArticleAdapter.CategoryItemCLick {
-            override fun onClick(allCategory: AllCategory, position: Int) {
-                TODO("Not yet implemented")
+            override fun onClick(article: Article, position: Int) {
+                findNavController().navigate(R.id.infoFragment)
             }
         })
         binding.myRv.adapter = articleAdapter
@@ -152,7 +156,7 @@ class HomeFragment : Fragment(), CoroutineScope, HomeCategoryAdapter.CategoryIte
     @SuppressLint("NotifyDataSetChanged")
     suspend fun getCategoryItem(category:String){
         categoryNewsViewModel.getCategoryNews(category,
-            "7c04fcfddd224ed6a591ac49e9abb8f2").collect {
+            API_KEY).collect {
             when (it.status) {
                 Status.LOADING -> {
                     binding.rvProgress.visibility = View.VISIBLE

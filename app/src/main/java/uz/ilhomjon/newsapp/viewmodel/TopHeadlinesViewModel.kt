@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import uz.ilhomjon.newsapp.models.TopHeadlines.TopHeadlinesResponse
 import uz.ilhomjon.newsapp.repository.NetworkRepository
+import uz.ilhomjon.newsapp.utils.Constants.API_KEY
 import uz.ilhomjon.newsapp.utils.Resource
 import uz.ilhomjon.newsapp.utils.Status
 import javax.inject.Inject
@@ -24,7 +25,7 @@ class TopHeadlinesViewModel @Inject constructor(private val repository: NetworkR
 
     private fun getTopHeadlines() {
         viewModelScope.launch {
-            repository.getTopHeadlines("us", "7c04fcfddd224ed6a591ac49e9abb8f2").catch {
+            repository.getTopHeadlines("us", API_KEY).catch {
                 stateFlow.value = Resource(Status.ERROR, null, it.message.toString())
             }.collect {
                 if (it.isSuccessful) {
