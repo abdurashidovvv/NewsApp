@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.os.bundleOf
+import androidx.core.widget.addTextChangedListener
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
@@ -30,11 +31,14 @@ import uz.ilhomjon.newsapp.view.adapters.ArticleAdapter
 import uz.ilhomjon.newsapp.view.adapters.HomeCategoryAdapter
 import uz.ilhomjon.newsapp.view.adapters.HomeViewPagerAdapter
 import uz.ilhomjon.newsapp.viewmodel.CategoryNewsViewModel
+import uz.ilhomjon.newsapp.viewmodel.SearchViewModel
 import uz.ilhomjon.newsapp.viewmodel.TopHeadlinesViewModel
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 import kotlin.math.abs
+import kotlin.math.log
 
+@Suppress("UNREACHABLE_CODE")
 class HomeFragment : Fragment(), CoroutineScope, HomeCategoryAdapter.CategoryItemCLick {
 
     override fun onAttach(context: Context) {
@@ -48,6 +52,9 @@ class HomeFragment : Fragment(), CoroutineScope, HomeCategoryAdapter.CategoryIte
 
     @Inject
     lateinit var categoryNewsViewModel: CategoryNewsViewModel
+
+    @Inject
+    lateinit var searchViewModel: SearchViewModel
 
     private lateinit var homeViewPagerAdapter: HomeViewPagerAdapter
     private lateinit var articleAdapter: ArticleAdapter
@@ -66,6 +73,8 @@ class HomeFragment : Fragment(), CoroutineScope, HomeCategoryAdapter.CategoryIte
         list = ArrayList()
         categoryList = ArrayList()
         categoryArticleList = ArrayList()
+
+
 
         //Viewpager2
         homeViewPagerAdapter = HomeViewPagerAdapter(categoryArticleList)
@@ -135,6 +144,44 @@ class HomeFragment : Fragment(), CoroutineScope, HomeCategoryAdapter.CategoryIte
         }
         return binding.root
     }
+
+    @SuppressLint("NotifyDataSetChanged")
+    override fun onResume() {
+        super.onResume()
+        binding.searchEdt.addTextChangedListener {
+            if (binding.searchEdt.text.toString()!=""){
+                binding.myViewpager.visibility=View.GONE
+                binding.myTabLayout.visibility=View.GONE
+                launch(Dispatchers.Main) {
+                    searchViewModel.searchArticle(it.toString()).collect {
+                        when (it.status) {
+                            Status.LOADING->{
+                                Log.d("@log", "onCreateView: loading")
+                                binding.viewpagerProgress.visibility=View.VISIBLE
+                            }
+                            Status.SUCCESS->{
+                                if (it.data!=null){
+                                    Log.d("@log", "onCreateView: ${it.data}")
+                                    val list=it.data.articles
+                                    articleAdapter.list=list
+                                    binding.viewpagerProgress.visibility=View.GONE
+                                }
+                            }
+                            Status.ERROR->{
+                                Log.d("@log", "onCreateView: error")
+                            }
+                        }
+                    }
+                    binding.myRv.adapter!!.notifyDataSetChanged()
+                }
+            }else{
+                binding.myViewpager.visibility=View.VISIBLE
+                binding.myRv.visibility=View.VISIBLE
+                binding.myTabLayout.visibility=View.VISIBLE
+            }
+        }
+    }
+
 
     override val coroutineContext: CoroutineContext
         get() = Job()

@@ -12,4 +12,6 @@ class NetworkRepository @Inject constructor(private val apiService: ApiService) 
     suspend fun categoryNewsRepository(category: String, apiKey: String) =
         flow { emit(apiService.getCategoryNews(category, apiKey)) }
 
+    suspend fun searchArticleRepository(apiKey: String, query: String) =
+        flow { emit(apiService.getNews(apiKey, query)) }
 }

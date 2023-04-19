@@ -20,4 +20,11 @@ interface ApiService {
         @Query("category") category: String,
         @Query("apiKey") apiKey: String
     ):Response<CategoryResponse>
+
+    @GET("everything")
+    suspend fun getNews(
+        @Query("apiKey") apiKey: String,
+        @Query("q") query: String
+    ):Response<TopHeadlinesResponse>
+
 }

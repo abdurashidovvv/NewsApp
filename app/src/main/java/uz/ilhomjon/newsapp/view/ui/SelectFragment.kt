@@ -19,6 +19,7 @@ import uz.ilhomjon.newsapp.databinding.FragmentSelectBinding
 import uz.ilhomjon.newsapp.models.TopHeadlines.Article
 import uz.ilhomjon.newsapp.utils.Status
 import uz.ilhomjon.newsapp.view.adapters.ArticleAdapter
+import uz.ilhomjon.newsapp.viewmodel.SearchViewModel
 import uz.ilhomjon.newsapp.viewmodel.TopHeadlinesViewModel
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
@@ -32,6 +33,9 @@ class SelectFragment : Fragment(), ArticleAdapter.CategoryItemCLick, CoroutineSc
 
     @Inject
     lateinit var topHeadlinesViewModel: TopHeadlinesViewModel
+
+    @Inject
+    lateinit var searchViewModel: SearchViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         App.appComponent.injectSelectFragment(this)
@@ -50,7 +54,7 @@ class SelectFragment : Fragment(), ArticleAdapter.CategoryItemCLick, CoroutineSc
         list = ArrayList()
         articleAdapter = ArticleAdapter(list, this)
         launch(Dispatchers.Main) {
-            topHeadlinesViewModel.getStateFlow().collect {
+            searchViewModel.searchArticle(title.toString()).collect {
                 when (it.status) {
                     Status.LOADING -> {
                         binding.myProgress.visibility = View.VISIBLE
