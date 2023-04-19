@@ -13,4 +13,5 @@ interface CategoryDao {
 
     @Query("select *from allcategory")
     suspend fun getAllCategory():List<AllCategory>
+
 }
