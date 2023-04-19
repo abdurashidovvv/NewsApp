@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -70,7 +71,7 @@ class SelectFragment : Fragment(),ArticleAdapter.CategoryItemCLick, CoroutineSco
     }
 
     override fun onClick(article: Article, position: Int) {
-        findNavController().navigate(R.id.infoFragment)
+        findNavController().navigate(R.id.infoFragment, bundleOf("article" to article))
     }
 
     override val coroutineContext: CoroutineContext

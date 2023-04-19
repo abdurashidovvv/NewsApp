@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
@@ -87,9 +88,9 @@ class HomeFragment : Fragment(), CoroutineScope, HomeCategoryAdapter.CategoryIte
         //category
         val allCategory = Constants.categoryList
         for (category in allCategory) {
-            if (category=="business"){
+            if (category == "business") {
                 categoryList.add(AllCategory(category_name = category, isSelected = true))
-            }else{
+            } else {
                 categoryList.add(AllCategory(category_name = category))
             }
         }
@@ -98,7 +99,7 @@ class HomeFragment : Fragment(), CoroutineScope, HomeCategoryAdapter.CategoryIte
 
         articleAdapter = ArticleAdapter(list, object : ArticleAdapter.CategoryItemCLick {
             override fun onClick(article: Article, position: Int) {
-                findNavController().navigate(R.id.infoFragment)
+                findNavController().navigate(R.id.infoFragment, bundleOf("article" to article))
             }
         })
         binding.myRv.adapter = articleAdapter
@@ -109,26 +110,25 @@ class HomeFragment : Fragment(), CoroutineScope, HomeCategoryAdapter.CategoryIte
 
         //TopHeadlines
         launch(Dispatchers.Main) {
-            getCategoryItem("business")
             topHeadlinesViewModel.getStateFlow().collect {
                 when (it.status) {
                     Status.LOADING -> {
-                        binding.viewpagerProgress.visibility = View.VISIBLE
-                        Log.d("@@@", "onCreateView: ${it.message}")
+                        binding.rvProgress.visibility = View.VISIBLE
+                        Log.d("@homeFragment", "onCreateView: ${it.message}")
                     }
                     Status.SUCCESS -> {
-                        binding.viewpagerProgress.visibility = View.GONE
+                        binding.rvProgress.visibility = View.GONE
                         if (it.data != null) {
                             list.addAll(it.data.articles)
                             articleAdapter.list = list
                             articleAdapter.notifyDataSetChanged()
-                            Log.d("@@@", "onCreateView: ${it.data.articles}")
+                            Log.d("@homeFragment", "onCreateView: ${it.data.articles}")
                         } else {
-                            Log.d("@@@", "onCreateView: ${it.message}")
+                            Log.d("@homeFragment", "onCreateView: ${it.message}")
                         }
                     }
                     Status.ERROR -> {
-                        Log.d("@@@", "onCreateView: ${it.message}")
+                        Log.d("@homeFragment", "onCreateView: ${it.message}")
                     }
                 }
             }
@@ -153,17 +153,17 @@ class HomeFragment : Fragment(), CoroutineScope, HomeCategoryAdapter.CategoryIte
         }
     }
 
+
     @SuppressLint("NotifyDataSetChanged")
-    suspend fun getCategoryItem(category:String){
-        categoryNewsViewModel.getCategoryNews(category,
-            API_KEY).collect {
+    suspend fun getCategoryItem(category: String) {
+        categoryNewsViewModel.getCategoryNews(category, API_KEY).collect {
             when (it.status) {
                 Status.LOADING -> {
-                    binding.rvProgress.visibility = View.VISIBLE
+                    binding.viewpagerProgress.visibility = View.VISIBLE
                     Log.d("@@@", "onClick: ${it.message}")
                 }
                 Status.SUCCESS -> {
-                    binding.rvProgress.visibility = View.GONE
+                    binding.viewpagerProgress.visibility = View.GONE
                     if (it.data != null) {
                         categoryArticleList.clear()
                         Log.d("@@@", "onClick: ${it.data.articles}")
