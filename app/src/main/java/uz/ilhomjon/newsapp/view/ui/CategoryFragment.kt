@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
 import uz.ilhomjon.newsapp.R
 import uz.ilhomjon.newsapp.databinding.FragmentCategoryBinding
@@ -31,6 +32,6 @@ class CategoryFragment : Fragment(), CategoryFragmentAdapter.CategoryFragmentCli
     }
 
     override fun onClick(categoryItem: CategoryItem) {
-        findNavController().navigate(R.id.selectFragment)
+        findNavController().navigate(R.id.selectFragment, bundleOf("category" to categoryItem.name))
     }
 }

@@ -24,11 +24,12 @@ import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
 
-class SelectFragment : Fragment(),ArticleAdapter.CategoryItemCLick, CoroutineScope {
+class SelectFragment : Fragment(), ArticleAdapter.CategoryItemCLick, CoroutineScope {
 
     private val binding by lazy { FragmentSelectBinding.inflate(layoutInflater) }
     private lateinit var articleAdapter: ArticleAdapter
-    private lateinit var list:ArrayList<Article>
+    private lateinit var list: ArrayList<Article>
+
     @Inject
     lateinit var topHeadlinesViewModel: TopHeadlinesViewModel
 
@@ -36,37 +37,41 @@ class SelectFragment : Fragment(),ArticleAdapter.CategoryItemCLick, CoroutineSco
         App.appComponent.injectSelectFragment(this)
         super.onCreate(savedInstanceState)
     }
+
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
 
-        list= ArrayList()
-        articleAdapter= ArticleAdapter(list, this)
+        val title = arguments?.getString("category")
+        binding.title.text = title
+
+        list = ArrayList()
+        articleAdapter = ArticleAdapter(list, this)
         launch(Dispatchers.Main) {
-            topHeadlinesViewModel.getStateFlow().collect{
-                when(it.status){
-                    Status.LOADING->{
-                        binding.myProgress.visibility=View.VISIBLE
+            topHeadlinesViewModel.getStateFlow().collect {
+                when (it.status) {
+                    Status.LOADING -> {
+                        binding.myProgress.visibility = View.VISIBLE
                     }
-                    Status.SUCCESS->{
-                        binding.myProgress.visibility=View.GONE
-                        if (it.data!=null){
-                            articleAdapter.list=it.data.articles
+                    Status.SUCCESS -> {
+                        binding.myProgress.visibility = View.GONE
+                        if (it.data != null) {
+                            articleAdapter.list = it.data.articles
                             articleAdapter.notifyDataSetChanged()
-                        }else{
+                        } else {
                             Toast.makeText(context, "Error Response", Toast.LENGTH_SHORT).show()
                         }
                     }
-                    Status.ERROR->{
+                    Status.ERROR -> {
                         Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
         }
 
-        binding.myRv.adapter=articleAdapter
+        binding.myRv.adapter = articleAdapter
         return binding.root
     }
 
