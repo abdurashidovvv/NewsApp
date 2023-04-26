@@ -4,8 +4,9 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import uz.ilhomjon.newsapp.database.dao.CategoryDao
 import uz.ilhomjon.newsapp.database.entity.AllCategory
+import uz.ilhomjon.newsapp.database.entity.ArticleEntitiy
 
-@Database(entities = [AllCategory::class], version = 1)
+@Database(entities = [AllCategory::class, ArticleEntitiy::class], version = 2)
 abstract class AppDatabase :RoomDatabase(){
 
     abstract fun allCategoryDao():CategoryDao

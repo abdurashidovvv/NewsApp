@@ -12,6 +12,7 @@ import androidx.viewpager2.widget.MarginPageTransformer
 import uz.ilhomjon.newsapp.R
 import uz.ilhomjon.newsapp.databinding.FragmentFirstBinding
 import uz.ilhomjon.newsapp.view.adapters.TravelLocationsAdapter
+import kotlin.math.abs
 
 class FirstFragment : Fragment() {
 
@@ -22,9 +23,9 @@ class FirstFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         list = ArrayList()
-        list.add(R.drawable.logo)
-        list.add(R.drawable.ic_launcher_background)
-        list.add(R.drawable.logo)
+        list.add(R.drawable.splash1)
+        list.add(R.drawable.splash3)
+        list.add(R.drawable.splash2)
 
         binding.locationsViewPager.adapter = TravelLocationsAdapter(list)
         binding.apply {
@@ -35,7 +36,7 @@ class FirstFragment : Fragment() {
             val compositePageTransformer = CompositePageTransformer()
             compositePageTransformer.addTransformer(MarginPageTransformer(40))
             compositePageTransformer.addTransformer { page, position ->
-                val r: Float = 1 - Math.abs(position)
+                val r: Float = 1 - abs(position)
                 page.scaleY = 0.95f + r * 0.05f
             }
             locationsViewPager.setPageTransformer(compositePageTransformer)

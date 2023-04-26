@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import uz.ilhomjon.newsapp.database.entity.AllCategory
+import uz.ilhomjon.newsapp.database.entity.ArticleEntitiy
 import uz.ilhomjon.newsapp.repository.DatabaseRepository
 import uz.ilhomjon.newsapp.utils.Resource
 import uz.ilhomjon.newsapp.utils.Status
@@ -27,6 +28,27 @@ class DatabaseViewModel @Inject constructor(private val databaseRepository: Data
     fun addCategory(allCategory: AllCategory) {
         viewModelScope.launch {
             databaseRepository.addCategory(allCategory)
+        }
+    }
+
+    fun addArticle(articleEntitiy: ArticleEntitiy){
+        viewModelScope.launch {
+            databaseRepository.addArticle(articleEntitiy)
+        }
+    }
+
+    private var stateFlow2=
+        MutableStateFlow<Resource<List<ArticleEntitiy>>>(Resource(Status.LOADING, null, "Loading"))
+    fun getAllArticle():StateFlow<Resource<List<ArticleEntitiy>>>{
+        viewModelScope.launch {
+            stateFlow2.value= Resource(Status.SUCCESS, databaseRepository.getAllArticle(), "Success")
+        }
+        return stateFlow2
+    }
+
+    fun deleteArticle(articleEntitiy: ArticleEntitiy){
+        viewModelScope.launch {
+            databaseRepository.deleteArticle(articleEntitiy)
         }
     }
 }
