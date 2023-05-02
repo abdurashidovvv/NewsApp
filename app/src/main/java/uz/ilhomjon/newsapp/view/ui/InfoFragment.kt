@@ -1,6 +1,5 @@
 package uz.ilhomjon.newsapp.view.ui
 
-import android.content.Entity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -12,10 +11,13 @@ import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import uz.ilhomjon.newsapp.App
+import uz.ilhomjon.newsapp.R
 import uz.ilhomjon.newsapp.database.entity.ArticleEntitiy
 import uz.ilhomjon.newsapp.databinding.FragmentInfoBinding
 import uz.ilhomjon.newsapp.models.TopHeadlines.Article
@@ -50,7 +52,7 @@ class InfoFragment : Fragment(), CoroutineScope {
             val shareIntent = Intent()
             shareIntent.action = Intent.ACTION_SEND
             shareIntent.type = "text/plain"
-            shareIntent.putExtra(Intent.EXTRA_TEXT, article.url);
+            shareIntent.putExtra(Intent.EXTRA_TEXT, article.url)
             startActivity(Intent.createChooser(shareIntent, "Send to..."))
         }
         Picasso.get().load(article.urlToImage).into(binding.image)
@@ -59,50 +61,67 @@ class InfoFragment : Fragment(), CoroutineScope {
             findNavController().popBackStack()
         }
 
-        list = ArrayList<ArticleEntitiy?>()
-        launch {
+        list = ArrayList()
+
+        launch(Dispatchers.Main) {
             databaseViewModel.getAllArticle().collectLatest {
                 if (it.data != null) {
-                    list.addAll(it.data)
+                    it.data.forEach { articleEntity ->
+                        if (articleEntity.article_image == article.urlToImage && articleEntity.article_title == article.title) {
+                            binding.save.setAltImageResource(R.drawable.bookmark3)
+                            binding.save.setImageResource(R.drawable.bookmark3)
+                        }
+                    }
                 }
             }
         }
+
+        launch {
+            loadData()
+        }
+
+        val saveArticle = ArticleEntitiy(
+            article_id = article.source?.id.toString(),
+            article_title = article.title.toString(),
+            article_summary = article.description.toString(),
+            article_image = article.urlToImage.toString()
+        )
+        binding.save.setOnClickListener {
+            if (checkArticle()) {
+                databaseViewModel.deleteArticle(saveArticle)
+                list.remove(saveArticle)
+                Log.d("@infoFragment", "onCreateView: ")
+                Toast.makeText(context, "Delete Article !", Toast.LENGTH_SHORT).show()
+                findNavController().popBackStack()
+            } else {
+                databaseViewModel.addArticle(saveArticle)
+                list.add(saveArticle)
+                Toast.makeText(context, "Save Article !", Toast.LENGTH_SHORT).show()
+            }
+
+        }
+
 
         return binding.root
     }
 
-    override fun onResume() {
-        super.onResume()
+    private fun checkArticle(): Boolean {
+        list.forEach {
+            if (it?.article_title == article.title || it?.article_image == article.urlToImage) return true
+        }
+        return false
+    }
 
-        binding.save.setOnClickListener {
-            for (articleEntitiy in list) {
-                if (articleEntitiy?.article_title != article.title && articleEntitiy?.article_image != article.urlToImage) {
-                    val saveArticle = ArticleEntitiy(
-                        article_id = article.source?.id.toString(),
-                        article_title = article.title.toString(),
-                        article_summary = article.description.toString(),
-                        article_image = article.urlToImage.toString()
-                    )
-                    list.add(saveArticle)
-                    databaseViewModel.addArticle(saveArticle)
-                    Toast.makeText(binding.root.context, "Save!", Toast.LENGTH_SHORT)
-                        .show()
-                } else {
-                    val deleteArticle = ArticleEntitiy(
-                        articleEntitiy!!.id,
-                        articleEntitiy.article_id,
-                        articleEntitiy.article_title,
-                        articleEntitiy.article_summary,
-                        articleEntitiy.article_image
-                    )
-                    list.remove(deleteArticle)
-                    databaseViewModel.deleteArticle(deleteArticle)
-                    Toast.makeText(context, "Delete Article ! ", Toast.LENGTH_SHORT).show()
-                }
+    private suspend fun loadData() {
+        databaseViewModel.getAllArticle().catch {
+            Log.d("@infoFragment", "loadData: ${it.message}")
+        }.collectLatest {
+            if (it.data != null) {
+                list.addAll(it.data)
             }
         }
-
     }
+
 
     override val coroutineContext: CoroutineContext
         get() = Job()
