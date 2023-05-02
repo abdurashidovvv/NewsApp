@@ -88,8 +88,9 @@ class InfoFragment : Fragment(), CoroutineScope {
         )
         binding.save.setOnClickListener {
             if (checkArticle()) {
-                databaseViewModel.deleteArticle(saveArticle)
-                list.remove(saveArticle)
+                val articleToDelete =
+                    databaseViewModel.getAllArticle().value.data?.find { it.article_title == "${article.title}" && it.article_image == article.urlToImage }
+                articleToDelete?.let { databaseViewModel.deleteArticle(it) }
                 Log.d("@infoFragment", "onCreateView: ")
                 Toast.makeText(context, "Delete Article !", Toast.LENGTH_SHORT).show()
                 findNavController().popBackStack()
