@@ -92,11 +92,16 @@ class InfoFragment : Fragment(), CoroutineScope {
                     databaseViewModel.getAllArticle().value.data?.find { it.article_title == "${article.title}" && it.article_image == article.urlToImage }
                 articleToDelete?.let { databaseViewModel.deleteArticle(it) }
                 Log.d("@infoFragment", "onCreateView: ")
+                binding.save.setAltImageResource(R.drawable.bookmark2)
+                binding.save.setImageResource(R.drawable.bookmark )
+
                 Toast.makeText(context, "Delete Article !", Toast.LENGTH_SHORT).show()
                 findNavController().popBackStack()
             } else {
                 databaseViewModel.addArticle(saveArticle)
                 list.add(saveArticle)
+                binding.save.setAltImageResource(R.drawable.bookmark3)
+                binding.save.setImageResource(R.drawable.bookmark3)
                 Toast.makeText(context, "Save Article !", Toast.LENGTH_SHORT).show()
             }
 

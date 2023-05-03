@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.app.ActivityCompat.recreate
 import androidx.navigation.fragment.findNavController
 import uz.ilhomjon.newsapp.R
 import uz.ilhomjon.newsapp.databinding.FragmentSettingsBinding
@@ -26,6 +27,13 @@ class SettingsFragment : Fragment() {
             findNavController().navigate(R.id.languageFragment)
         }
 
+
+        // Listen for changes to the switch state
+        binding.darkSwitch.setOnCheckedChangeListener { _, isChecked ->
+            // Enable or disable dark mode based on the switch state
+            AppCompatDelegate.setDefaultNightMode(if (isChecked) AppCompatDelegate.MODE_NIGHT_NO else AppCompatDelegate.MODE_NIGHT_YES)
+            // Recreate the activity to apply the new night mode
+        }
         return binding.root
     }
 }
